@@ -2,6 +2,8 @@
 protein_data = {
     "Zoledronic acid monohydrate": "DBPC0127348",
     "Clodronic acid": "DBPC0118686",
+    'Tamoxifen': "DBPC0017857",
+    
     "Ibuprofen": "DBPC0234567",
     "Paracetamol": "DBPC0345678",
     "Aspirin": "DBPC0456789",
