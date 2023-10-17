@@ -3,11 +3,19 @@ import requests
 from protein_data import available_proteins, protein_data
 from interaction_extractor import extract_interaction_info
 
+@st.cache_resource
+def load_env():
+    from predict import load_env
+    return load_env()
+
 def main():
-    st.title("Protein Interaction Checker")
+    st.title("Drug Interaction Checker")
+    
+    predict, drugs = load_env()
 
     # Multi-select widget for users to select proteins
-    selected_proteins = st.multiselect("Select proteins:", available_proteins)
+    #selected_proteins = st.multiselect("Select proteins:", available_proteins)
+    selected_proteins = st.multiselect("Select drugs:", drugs, max_selections=2)
 
     # Button to check interactions of the selected proteins
     if st.button("Check Interactions"):
@@ -20,9 +28,17 @@ def main():
         # Send POST request
         response = requests.post("https://go.drugbank.com/drug-interaction-checker", data=data)
 
-        try:
+        #try:
+        if True:
             # Extract interaction information from the response HTML
-            interaction_info = extract_interaction_info(response.text)
+            #interaction_info = extract_interaction_info(response.text)
+            interaction_info = {
+                "Interacting Proteins": selected_proteins,
+                "Severity": "minor", # TODO: map number to severity
+                # TODO: ask ChatGPT for these
+                "Description": "tuna",
+                "Extended Description": "foobar", 
+            }
 
             # Display the extracted information in a more design-centric manner
             st.write("### Interaction Results:")
@@ -53,15 +69,15 @@ def main():
                     st.write(interaction_info["Extended Description"])
 
                 # Display references in a separate expander in the same column
-                with st.expander("References"):
-                    for ref in interaction_info["References"]:
-                        if ref["link"]:
-                            st.markdown(f"- [{ref['name']}]({ref['link']})")
-                        else:
-                            st.write(f"- {ref['name']}")
+                # with st.expander("References"):
+                #     for ref in interaction_info["References"]:
+                #         if ref["link"]:
+                #             st.markdown(f"- [{ref['name']}]({ref['link']})")
+                #         else:
+                #             st.write(f"- {ref['name']}")
 
-        except Exception as e:
-            st.warning("No interactions were found or there was an issue processing the response.")
+        #except Exception as e:
+        #    st.warning("No interactions were found or there was an issue processing the response.")
 
 if __name__ == "__main__":
     main()
